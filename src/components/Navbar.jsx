@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import UserContext from "../context/UserContext.jsx";
 import axios from "axios";
@@ -18,7 +18,25 @@ const Navbar = () => {
     }
   };
 
-  console.log(user);
+  // check if user is loggedin
+
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const response = await axios.get(
+          "https://nobilis-back.onrender.com/is_auth"
+        );
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    checkUser();
+  }
+  , []);
+
+
 
   return (
     <div>

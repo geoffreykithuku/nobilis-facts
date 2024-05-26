@@ -10,9 +10,10 @@ const Facts = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "https://nobilis-back.onrender.com/fetch_data"
+      const response = await axios.get(
+        "https://nobilis-back.onrender.com/facts"
       );
+
       const data = await response.json();
       setFacts(data);
       setLoading(false);
