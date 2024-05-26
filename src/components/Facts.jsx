@@ -6,16 +6,11 @@ const Facts = () => {
   const [facts, setFacts] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const token = localStorage.getItem("token");
 
   const fetchData = async () => {
     setLoading(true);
 
-    if (!token) {
-      console.error("Token is missing");
-      setLoading(false);
-      return;
-    }
+   
     try {
       const response = await axios.get(
         "https://nobilis-back.onrender.com/fetch_data"
