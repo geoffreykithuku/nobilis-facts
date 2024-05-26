@@ -11,7 +11,7 @@ const Facts = () => {
 
     try {
       const response = await axios.get(
-        "https://nobilis-back.onrender.com/facts"
+        "https://nobilis-back.onrender.com/fetch_data"
       );
 
       const data = await response.json();
