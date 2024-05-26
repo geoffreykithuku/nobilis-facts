@@ -18,12 +18,7 @@ const Facts = () => {
     }
     try {
       const response = await axios.get(
-        "https://nobilis-back.onrender.com/fetch_data",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        "https://nobilis-back.onrender.com/fetch_data"
       );
       setFacts(response.data);
       setLoading(false);

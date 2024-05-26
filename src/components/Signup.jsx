@@ -28,7 +28,6 @@ const Signup = () => {
     axios
       .post("https://nobilis-back.onrender.com/signup", { user })
       .then((response) => {
-        localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
         setUser(response.data.user);
         navigate("/");
