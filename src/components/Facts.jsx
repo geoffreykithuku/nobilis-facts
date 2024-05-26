@@ -6,16 +6,15 @@ const Facts = () => {
   const [facts, setFacts] = useState([]);
   const [loading, setLoading] = useState(false);
 
-
   const fetchData = async () => {
     setLoading(true);
 
-   
     try {
-      const response = await axios.get(
-        "https://nobilis-back.onrender.com/fetch_data"
+      const response = await fetch(
+        "https://api-fact-check.herokuapp.com/facts"
       );
-      setFacts(response.data);
+      const data = await response.json();
+      setFacts(data);
       setLoading(false);
     } catch (error) {
       console.error(error);
