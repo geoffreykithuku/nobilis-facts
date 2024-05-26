@@ -26,7 +26,7 @@ const Signup = () => {
       password_confirmation: password_confirmation,
     };
     axios
-      .post("http://localhost:3000/signup", { user })
+      .post("https://nobilis-back.onrender.com/signup", { user })
       .then((response) => {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));

@@ -4,17 +4,27 @@ import { FadeLoader } from "react-spinners";
 
 const Facts = () => {
   const [facts, setFacts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const token = localStorage.getItem("token");
 
   const fetchData = async () => {
+    setLoading(true);
+
+    if (!token) {
+      console.error("Token is missing");
+      setLoading(false);
+      return;
+    }
     try {
-      const response = await axios.get("http://localhost:3000/fetch_data", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        "https://nobilis-back.onrender.com/fetch_data",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setFacts(response.data);
       setLoading(false);
     } catch (error) {
@@ -33,6 +43,7 @@ const Facts = () => {
       </div>
     );
   }
+  console.log(facts);
 
   return (
     <div className="px-5 sm:px-10 md:px-20 py-20">
