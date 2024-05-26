@@ -11,7 +11,7 @@ const Facts = () => {
 
     try {
       const response = await fetch(
-        "https://api-fact-check.herokuapp.com/facts"
+        "https://nobilis-back.onrender.com/fetch_data"
       );
       const data = await response.json();
       setFacts(data);

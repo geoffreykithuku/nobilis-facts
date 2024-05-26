@@ -8,7 +8,7 @@ const Navbar = () => {
   const { user } = useContext(UserContext);
 
   const handleLogout = async () => {
-    const response = await axios.post(
+    const response = await axios.delete(
       "https://nobilis-back.onrender.com/logout"
     );
 
