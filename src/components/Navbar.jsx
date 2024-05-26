@@ -24,7 +24,10 @@ const Navbar = () => {
     const checkUser = async () => {
       try {
         const response = await axios.get(
-          "https://nobilis-back.onrender.com/is_auth"
+          "https://nobilis-back.onrender.com/is_auth",
+          {
+            withCredentials: true,
+          }
         );
         console.log(response.data);
       } catch (error) {
@@ -33,10 +36,7 @@ const Navbar = () => {
     };
 
     checkUser();
-  }
-  , []);
-
-
+  }, []);
 
   return (
     <div>
