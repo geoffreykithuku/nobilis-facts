@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { FadeLoader } from "react-spinners";
 
+axios.defaults.withCredentials = true;
+
 const Facts = () => {
   const [facts, setFacts] = useState([]);
   const [loading, setLoading] = useState(false);

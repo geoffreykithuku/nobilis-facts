@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import UserContext from "../context/UserContext.jsx";
 import axios from "axios";
 import { toast } from "react-toastify";
+axios.defaults.withCredentials = true;
 
 const Navbar = () => {
   const { user } = useContext(UserContext);
@@ -15,6 +16,9 @@ const Navbar = () => {
     if (response.status === 200) {
       localStorage.removeItem("user");
       toast.success("Logout successful");
+      window.location.reload();
+    } else {
+      toast.error("Logout failed");
     }
   };
 
@@ -27,6 +31,9 @@ const Navbar = () => {
           "https://nobilis-back.onrender.com/is_auth",
           {
             withCredentials: true,
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
         );
         console.log(response.data);
