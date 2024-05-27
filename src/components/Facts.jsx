@@ -9,9 +9,8 @@ const Facts = () => {
   const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
-    setLoading(true);
-
     try {
+      setLoading(true);
       const response = await axios.get(
         "https://nobilis-back.onrender.com/fetch_data"
       );
