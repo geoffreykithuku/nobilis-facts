@@ -1,8 +1,30 @@
-# React + Vite
+# Nobilis Facts
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Introduction
 
-Currently, two official plugins are available:
+Nobilis Facts is a simple web application that allows users login, and view a list of facts from https://cat-fact.herokuapp.com/facts. It uses the following technologies:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React
+- Context API
+- React Router
+- Axios
+- Tailwind CSS
+- Rails API
+
+It fetches data from Rails API. The API is hosted on Render and can be accessed via this github link: https://github.com/geoffreykithuku/nobilis-back
+
+## Screenshots
+
+1. Login Page
+   ![screenshot](./src/assets/login.png)
+
+2. Facts Page
+   ![screenshot](./src/assets/facts.png)
+
+3. Home Page
+
+![screenshot](./src/assets/home.png)
+
+## Live Demo
+
+[Live Demo Link](https://nobilis-facts.vercel.app/)
