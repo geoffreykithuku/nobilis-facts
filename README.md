@@ -28,3 +28,21 @@ It fetches data from Rails API. The API is hosted on Render and can be accessed 
 ## Live Demo
 
 [Live Demo Link](https://nobilis-facts.vercel.app/)
+
+
+## Getting Started
+
+1. Frontend
+
+- Clone the repository `git clone git@github.com:geoffreykithuku/nobilis-facts.git`
+- Change directory `cd nobilis-facts`
+- Install dependencies `npm install`
+- Start the application `npm run dev` 
+
+2. Backend
+
+- Clone the repository `git clone git@github.com:geoffreykithuku/nobilis-back.git` 
+- Change directory `cd nobilis-back`
+- Install dependencies `bundle install`
+- Start the server `rails s`
+
