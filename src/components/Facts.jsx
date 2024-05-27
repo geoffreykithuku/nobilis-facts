@@ -14,9 +14,7 @@ const Facts = () => {
       const response = await axios.get(
         "https://nobilis-back.onrender.com/fetch_data"
       );
-
-      const data = await response.json();
-      setFacts(data);
+      setFacts(response.data);
       setLoading(false);
     } catch (error) {
       console.error(error);
