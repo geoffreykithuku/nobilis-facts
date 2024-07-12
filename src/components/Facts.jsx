@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FadeLoader } from "react-spinners";
+import Spinner from "./Spinner";
 
 axios.defaults.withCredentials = true;
 
@@ -18,6 +18,7 @@ const Facts = () => {
       setLoading(false);
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   };
 
@@ -26,13 +27,9 @@ const Facts = () => {
   }, []);
 
   if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <FadeLoader color="#36d7b7" />
-      </div>
-    );
+    return <Spinner />;
   }
-  console.log(facts);
+
 
   return (
     <div className="px-5 sm:px-10 md:px-20 py-20">

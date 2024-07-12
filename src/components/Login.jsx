@@ -3,9 +3,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../context/UserContext";
 import { toast } from "react-toastify";
+import Spinner from "./Spinner";
 
 const Login = () => {
-  const { setUser } = useContext(UserContext);
+  const { setUser, loading, setLoading } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const response = await axios.post(
         "https://nobilis-back.onrender.com/login",
         {
@@ -23,13 +25,19 @@ const Login = () => {
       );
       localStorage.setItem("user", JSON.stringify(response.data.user));
       setUser(response.data.user);
+      setLoading(false);
       navigate("/");
       toast.success("Login successful");
     } catch (error) {
       console.error(error);
       toast.error("Invalid email or password");
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Spinner />;
+  }
 
   return (
     <div className="h-screen bg-[#eee] px-5 sm:px-10 md:px-20 py-20 text-blue-500">
