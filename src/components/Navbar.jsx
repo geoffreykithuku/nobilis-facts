@@ -17,6 +17,7 @@ const Navbar = () => {
       localStorage.removeItem("user");
       toast.success("Logout successful");
       window.history.pushState({}, "", "/");
+      window.location.reload();
     } else {
       toast.error("Logout failed");
     }
