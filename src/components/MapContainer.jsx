@@ -42,6 +42,7 @@ const CustomMap = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+
           <Routing sourceCity={source} destinationCity={destination} />
         </MapContainer>
       </div>
@@ -65,10 +66,6 @@ const Routing = ({ sourceCity, destinationCity }) => {
         lineOptions: {
           styles: [{ color: "#00f", weight: 4 }],
         },
-        show: true,
-        showAlternatives: true,
-        addWaypoints: true,
-        fitSelectedRoutes: true,
       }).addTo(map);
     }
   }, [sourceCity, destinationCity]);
