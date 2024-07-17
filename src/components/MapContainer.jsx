@@ -1,10 +1,12 @@
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
-import L from "leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
+
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
 import LocationPicker from "./LocationPicker";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+
+import Routing from "./Routing";
 
 const CustomMap = () => {
   const [source, setSource] = useState({});
@@ -51,24 +53,3 @@ const CustomMap = () => {
 };
 
 export default CustomMap;
-
-const Routing = ({ sourceCity, destinationCity }) => {
-  const map = useMap();
-
-  useEffect(() => {
-    if (sourceCity.lat && destinationCity.lat) {
-      map.setView([sourceCity.lat, sourceCity.lng], 13);
-      L.Routing.control({
-        waypoints: [
-          L.latLng(sourceCity.lat, sourceCity.lng),
-          L.latLng(destinationCity.lat, destinationCity.lng),
-        ],
-        lineOptions: {
-          styles: [{ color: "#00f", weight: 4 }],
-        },
-      }).addTo(map);
-    }
-  }, [sourceCity, destinationCity]);
-
-  return null;
-};
