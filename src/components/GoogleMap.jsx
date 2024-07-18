@@ -1,14 +1,12 @@
 import {
-  AdvancedMarker,
   APIProvider,
   InfoWindow,
   Map,
   useMap,
-  Pin,
   useMapsLibrary,
 } from "@vis.gl/react-google-maps";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const apiKey = import.meta.env.VITE_MAPS_API_KEY;
 const mapId = import.meta.env.VITE_MAP_ID;
@@ -22,19 +20,62 @@ console.log(apiKey, mapId);
 
 const MyMap = () => {
   const [open, setOpen] = useState(false);
+  const [origin, setOrigin] = useState(null);
+  const [destination, setDestination] = useState(null);
+  const [mode, setMode] = useState("DRIVING");
+
+  const handleOriginSelect = (place) => {
+    if (place && place.geometry) {
+      setOrigin({
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      });
+    }
+  };
+
+  const handleDestinationSelect = (place) => {
+    if (place && place.geometry) {
+      setDestination({
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      });
+    }
+  };
+
   return (
     <APIProvider apiKey={apiKey}>
       <div className="h-screen">
         <Map center={center} zoom={12} mapId={mapId}>
-          <AdvancedMarker position={center} onClick={() => setOpen(true)}>
-            <Pin
-              background={"gray"}
-              borderColor={"green"}
-              glyphColor={"blue"}
-            />
-          </AdvancedMarker>
+          <Directions origin={origin} destination={destination} mode={mode} />
 
-          <Directions />
+          <div className="absolute top-10 left-0 m-4  bg-white p-4 rounded text-sm">
+            <PlaceAutocomplete
+              onPlaceSelect={handleOriginSelect}
+              placeholder="Enter origin"
+            />
+            <PlaceAutocomplete
+              onPlaceSelect={handleDestinationSelect}
+              placeholder="Enter destination"
+            />
+            <div className="flex gap-5 mt-2">
+              <button
+                onClick={() => setMode("DRIVING")}
+                className={`text-white py-2 px-3 rounded-lg ${
+                  mode === "DRIVING" ? "bg-blue-500" : "bg-gray-300"
+                }`}
+              >
+                Driving
+              </button>
+              <button
+                onClick={() => setMode("WALKING")}
+                className={`text-white py-2 px-3 rounded-lg ${
+                  mode === "WALKING" ? "bg-blue-500" : "bg-gray-300"
+                }`}
+              >
+                Walking
+              </button>
+            </div>
+          </div>
 
           {open && (
             <InfoWindow position={center} onCloseClick={() => setOpen(false)}>
@@ -51,7 +92,7 @@ const MyMap = () => {
 
 export default MyMap;
 
-const Directions = () => {
+const Directions = ({ origin, destination, mode }) => {
   const map = useMap();
   const routesLibrary = useMapsLibrary("routes");
   const [directionsService, setDirectionsService] = useState(null);
@@ -70,13 +111,13 @@ const Directions = () => {
   }, [routesLibrary, map]);
 
   useEffect(() => {
-    if (!directionsService || !directionsRenderer) return;
+    if (!directionsService || !directionsRenderer || !origin || !destination)
+      return;
 
     const request = {
-      origin: "Nairobi garage, Ngong Rd, Nairobi, Kenya",
-      destination: "Railways Golf Club, Nairobi, Kenya",
-      travelMode: google.maps.TravelMode.DRIVING,
-      provideRouteAlternatives: true,
+      origin: origin,
+      destination: destination,
+      travelMode: mode,
     };
 
     directionsService.route(request, (result, status) => {
@@ -85,7 +126,7 @@ const Directions = () => {
         setRoutes(result.routes);
       }
     });
-  }, [directionsService, directionsRenderer]);
+  }, [directionsService, directionsRenderer, origin, destination, mode]);
 
   useEffect(
     () => {
@@ -100,19 +141,21 @@ const Directions = () => {
   if (!leg) return null;
 
   return (
-    <div className="directions absolute top-0 right-0 p-4 max-w-xl">
-      <div className="bg-white p-3 rounded-lg w-full ">
-        <h2>{selectedRoute.summary}</h2>
-        <p>
+    <div className="directions absolute top-0 right-0 p-4 max-w-xl text-[#3c3c3c]">
+      <div className="bg-white p-3 rounded w-full ">
+        <h2 className="font-medium text-[#00000045]">
+          {selectedRoute.summary}
+        </h2>
+        <p className="text-sm">
           {leg.start_address.split(",")[0]} to {leg.end_address.split(",")[0]}
         </p>
-        <p>
+        <p className="text-sm">
           Distance: {leg.distance?.text} Duration: {leg.duration?.text}
         </p>
-        <h2>Other Routes Available</h2>
-        <ul>
+        <h2 className="font-medium text-[#00000045]">Other Routes Available</h2>
+        <ul className="space-y-2 list-disc pl-4">
           {routes.map((route, index) => (
-            <li key={index}>
+            <li key={index} className="text-sm">
               <button onClick={() => setRouteIndex(index)}>
                 {route.summary}
               </button>
@@ -120,6 +163,40 @@ const Directions = () => {
           ))}
         </ul>
       </div>
+    </div>
+  );
+};
+
+const PlaceAutocomplete = ({ onPlaceSelect, placeholder }) => {
+  const [placeAutocomplete, setPlaceAutocomplete] = useState(null);
+  const inputRef = useRef(null);
+  const places = useMapsLibrary("places");
+
+  useEffect(() => {
+    if (!places || !inputRef.current) return;
+
+    const options = {
+      fields: ["geometry", "name", "formatted_address"],
+    };
+
+    setPlaceAutocomplete(new places.Autocomplete(inputRef.current, options));
+  }, [places]);
+
+  useEffect(() => {
+    if (!placeAutocomplete) return;
+
+    placeAutocomplete.addListener("place_changed", () => {
+      onPlaceSelect(placeAutocomplete.getPlace());
+    });
+  }, [onPlaceSelect, placeAutocomplete]);
+
+  return (
+    <div className=" rounded mb-2">
+      <input
+        ref={inputRef}
+        placeholder={placeholder}
+        className="border border-gray-300 p-2 rounded-lg w-full focus:outline-none"
+      />
     </div>
   );
 };
