@@ -66,8 +66,11 @@ const MyMap = () => {
 
   return (
     <APIProvider apiKey={apiKey}>
-      <div className="h-screen" id="map">
-        <Map center={center} zoom={13} mapId={mapId}>
+      <div className="w-full h-screen" id="map">
+        <Map center={center} defaultZoom={13}
+          zoomControl={true}
+          gestureHandling={"greedy"}
+          mapId={mapId}>
           <Directions
             origin={origin}
             destination={destination}
