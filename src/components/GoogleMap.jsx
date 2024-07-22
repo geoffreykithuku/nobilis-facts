@@ -4,6 +4,7 @@ import {
   Map,
   useMap,
   useMapsLibrary,
+  Marker,
 } from "@vis.gl/react-google-maps";
 
 import { useEffect, useState, useRef } from "react";
@@ -11,18 +12,18 @@ import { useEffect, useState, useRef } from "react";
 const apiKey = import.meta.env.VITE_MAPS_API_KEY;
 const mapId = import.meta.env.VITE_MAP_ID;
 
-const center = {
-  lat: -1.286389,
-  lng: 36.817223,
-};
-
-console.log(apiKey, mapId);
-
 const MyMap = () => {
   const [open, setOpen] = useState(false);
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
   const [mode, setMode] = useState("DRIVING");
+
+  const [waypoints, setWaypoints] = useState([]);
+
+  const center = {
+    lat: -1.286389,
+    lng: 36.817223,
+  };
 
   const handleOriginSelect = (place) => {
     if (place && place.geometry) {
@@ -42,11 +43,37 @@ const MyMap = () => {
     }
   };
 
+  const handleWaypointSelect = (place) => {
+    if (place && place.geometry) {
+      setWaypoints((prevWaypoints) => [
+        ...prevWaypoints,
+        {
+          location: {
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng(),
+          },
+          stopover: true,
+        },
+      ]);
+    }
+  };
+
+  const removeWaypoint = (index) => {
+    setWaypoints((prevWaypoints) =>
+      prevWaypoints.filter((_, i) => i !== index)
+    );
+  };
+
   return (
     <APIProvider apiKey={apiKey}>
-      <div className="h-screen">
-        <Map center={center} zoom={12} mapId={mapId}>
-          <Directions origin={origin} destination={destination} mode={mode} />
+      <div className="h-screen" id="map">
+        <Map center={center} zoom={13} mapId={mapId}>
+          <Directions
+            origin={origin}
+            destination={destination}
+            mode={mode}
+            waypoints={waypoints}
+          />
 
           <div className="absolute top-10 left-0 m-4  bg-white p-4 rounded text-sm">
             <PlaceAutocomplete
@@ -56,6 +83,10 @@ const MyMap = () => {
             <PlaceAutocomplete
               onPlaceSelect={handleDestinationSelect}
               placeholder="Enter destination"
+            />
+            <WaypointAutocomplete
+              onPlaceSelect={handleWaypointSelect}
+              placeholder="Enter waypoint"
             />
             <div className="flex gap-5 mt-2">
               <button
@@ -75,7 +106,30 @@ const MyMap = () => {
                 Walking
               </button>
             </div>
+            {waypoints.map((waypoint, index) => (
+              <div
+                key={index}
+                className="flex justify-between items-center mt-2"
+              >
+                <span>
+                  {waypoint.location.lat}, {waypoint.location.lng}
+                </span>
+                <button
+                  onClick={() => removeWaypoint(index)}
+                  className="text-red-500"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
           </div>
+          {waypoints.map((waypoint, index) => (
+            <Marker
+              key={index}
+              position={waypoint.location}
+              title={`Waypoint ${index + 1}`}
+            />
+          ))}
 
           {open && (
             <InfoWindow position={center} onCloseClick={() => setOpen(false)}>
@@ -92,7 +146,7 @@ const MyMap = () => {
 
 export default MyMap;
 
-const Directions = ({ origin, destination, mode }) => {
+const Directions = ({ origin, destination, mode, waypoints }) => {
   const map = useMap();
   const routesLibrary = useMapsLibrary("routes");
   const [directionsService, setDirectionsService] = useState(null);
@@ -118,6 +172,7 @@ const Directions = ({ origin, destination, mode }) => {
       origin: origin,
       destination: destination,
       travelMode: mode,
+      waypoints: waypoints,
     };
 
     directionsService.route(request, (result, status) => {
@@ -126,7 +181,14 @@ const Directions = ({ origin, destination, mode }) => {
         setRoutes(result.routes);
       }
     });
-  }, [directionsService, directionsRenderer, origin, destination, mode]);
+  }, [
+    directionsService,
+    directionsRenderer,
+    origin,
+    destination,
+    mode,
+    waypoints,
+  ]);
 
   useEffect(
     () => {
@@ -140,6 +202,7 @@ const Directions = ({ origin, destination, mode }) => {
 
   if (!leg) return null;
 
+  console.log(routes);
   return (
     <div className="directions absolute top-0 right-0 p-4 max-w-xl text-[#3c3c3c]">
       <div className="bg-white p-3 rounded w-full ">
@@ -168,6 +231,40 @@ const Directions = ({ origin, destination, mode }) => {
 };
 
 const PlaceAutocomplete = ({ onPlaceSelect, placeholder }) => {
+  const [placeAutocomplete, setPlaceAutocomplete] = useState(null);
+  const inputRef = useRef(null);
+  const places = useMapsLibrary("places");
+
+  useEffect(() => {
+    if (!places || !inputRef.current) return;
+
+    const options = {
+      fields: ["geometry", "name", "formatted_address"],
+    };
+
+    setPlaceAutocomplete(new places.Autocomplete(inputRef.current, options));
+  }, [places]);
+
+  useEffect(() => {
+    if (!placeAutocomplete) return;
+
+    placeAutocomplete.addListener("place_changed", () => {
+      onPlaceSelect(placeAutocomplete.getPlace());
+    });
+  }, [onPlaceSelect, placeAutocomplete]);
+
+  return (
+    <div className=" rounded mb-2">
+      <input
+        ref={inputRef}
+        placeholder={placeholder}
+        className="border border-gray-300 p-2 rounded-lg w-full focus:outline-none"
+      />
+    </div>
+  );
+};
+
+const WaypointAutocomplete = ({ onPlaceSelect, placeholder }) => {
   const [placeAutocomplete, setPlaceAutocomplete] = useState(null);
   const inputRef = useRef(null);
   const places = useMapsLibrary("places");
