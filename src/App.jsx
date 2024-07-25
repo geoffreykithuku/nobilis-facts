@@ -9,7 +9,6 @@ import PrivateRoute from "./components/PrivateRoute";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CustomMap from "./components/MapContainer";
 import GoogleMap from "./components/GoogleMap";
 
 function App() {
